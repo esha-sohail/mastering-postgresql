@@ -1,0 +1,42 @@
+
+--Q1.Display all columns from the customers table
+SELECT * FROM customers;
+
+
+-- Q2.Find the total number of customers.
+SELECT COUNT(customer_id) AS total_customer
+FROM customers;
+
+--Q3.Count distinct customers using customer_unique_id.
+SELECT DISTINCT COUNT(customer_unique_id) AS distinct_customers
+FROM customers;
+
+--Q4.List all unique customer states.
+SELECT DISTINCT customer_state AS UNIQUE_STATE 
+FROM customers;
+
+--Q5.List all unique payment types.
+SELECT DISTINCT payment_type AS UNIQUE_payment 
+FROM order_payments;
+
+--Q6.Find all orders with status = 'delivered'.
+SELECT* FROM orders
+WHERE order_status='delivered';
+
+--Q7.Show the first 20 products.
+SELECT * FROM products
+LIMIT 20;
+
+--8. Find products whose weight exceeds 5000 grams.
+SELECT * FROM products
+WHERE product_weight_g >5000;
+
+--9.Show sellers from state SP.
+SELECT* FROM sellers
+WHERE seller_state='SP';
+
+--10.Find the earliest and latest purchase dates.
+SELECT 
+    MIN(order_purchase_timestamp) AS earliest_purchase_date,
+    MAX(order_purchase_timestamp) AS latest_purchase_date
+FROM orders;
