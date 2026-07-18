@@ -1,0 +1,63 @@
+select c.customer_id,sum(op.payment_value) as total_spending
+from customers c
+join orders o
+on o.customer_id=c.customer_id
+join order_payments op
+on o.order_id= op.order_id
+GROUP BY
+    c.customer_id
+order by total_spending desc
+limit 20;
+
+--Find top sellers by revenue.
+-- if its company_revnue
+select s.seller_id,sum(op.payment_value) as total_revnue
+from sellers s
+join order_item oi
+on oi.seller_id=s.seller_id
+join order_payments op
+on op.order_id= oi.order_id
+group by s.seller_id
+order by total_revnue desc
+limit 5;
+   --or 
+   --if its seller_revnue
+ select seller_id,sum(price) as total_revnue
+ from order_item
+ group by seller_id
+ order by total_revnue desc
+ limit 5;
+
+--Find top product categories by sales value.
+select product_id,sum(price) as sales_value
+from order_item
+group by product_id 
+order by sales_value desc
+limit 5;
+
+--if u also want category_name
+SELECT
+    ct.product_category_name_english AS category,
+    SUM(oi.price) AS total_sales
+FROM order_item oi
+JOIN products p
+    ON oi.product_id = p.product_id
+JOIN category_translation ct
+    ON p.product_category_name = ct.product_category_name
+GROUP BY ct.product_category_name_english
+ORDER BY total_sales DESC
+LIMIT 10;
+
+--Calculate average delivery time in days.
+SELECT
+    AVG(
+        EXTRACT(
+            DAY FROM (
+                order_delivered_customer_date -
+                order_purchase_timestamp
+            )
+        )
+    ) AS avg_delivery_days
+FROM orders
+WHERE order_status = 'delivered'
+  AND order_delivered_customer_date IS NOT NULL;
