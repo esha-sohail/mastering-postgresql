@@ -1,0 +1,68 @@
+---window functions basics in sql ;
+--1. Add row numbers to all customers
+select customer_id,
+row_number() over(order by customer_id ) as unique_row
+from customers;
+
+--Rank sellers by total revenue
+select seller_id , sum(price) as total_revnue,
+rank() over(order by sum(price) desc) as ranking
+from order_item
+group by seller_id;
+
+--Dense-rank product categories by revenue
+select sum(oi.price) as total_revnue, p.product_category_name,
+dense_rank() over(order by sum(oi.price) desc) as category_rank
+from order_item oi
+join products p
+on oi.product_id= p.product_id
+group by p.product_category_name;
+
+
+--Assign row numbers to orders within each customer
+SELECT
+    customer_id,
+    order_id,
+    order_purchase_timestamp,
+    ROW_NUMBER() OVER (
+        PARTITION BY customer_id
+        ORDER BY order_purchase_timestamp
+    ) AS order_number
+FROM orders 
+ORDER BY customer_id, order_number;
+
+--Find the first order of every customer
+SELECT
+    customer_id,
+    order_id,
+    order_purchase_timestamp
+FROM (
+    SELECT
+        customer_id,
+        order_id,
+        order_purchase_timestamp,
+        ROW_NUMBER() OVER (
+            PARTITION BY customer_id
+            ORDER BY order_purchase_timestamp
+        ) AS rn
+    FROM orders
+) t
+WHERE rn = 1;
+
+--find the latest order of every customer
+SELECT
+    customer_id,
+    order_id,
+    order_purchase_timestamp
+FROM (
+    SELECT
+        customer_id,
+        order_id,
+        order_purchase_timestamp,
+        ROW_NUMBER() OVER (
+            PARTITION BY customer_id
+            ORDER BY order_purchase_timestamp desc
+        ) AS rn
+    FROM orders
+) t
+WHERE rn = 1;
